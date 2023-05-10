@@ -152,7 +152,7 @@ const TicketPriceContainer = styled.div`
   }
 `;
 
-const RowTitle = styled.div`
+export const RowTitle = styled.div`
   font-family: 'Roboto', sans-serif;
   font-size: 20px;
   color: #858585;
