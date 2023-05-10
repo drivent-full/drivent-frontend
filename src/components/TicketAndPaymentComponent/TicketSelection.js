@@ -1,23 +1,59 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { toast } from 'react-toastify';
 import useTicketTypes from '../../hooks/api/useTicketTypes';
-import { useState } from 'react';
+import useSaveTicket from '../../hooks/api/useSaveTicket.js';
+import Button from '../Form/Button';
 
 export default function TicketSelection() {
   const { ticketTypes } = useTicketTypes();
+  const { saveTicket } = useSaveTicket();
 
   const [selectedInPerson, setSelectedInPerson] = useState(false);
   const [selectedRemote, setSelectedRemote] = useState(false);
   const [selectWithHotel, setSelectedWithHotel] = useState(false);
   const [selectWithoutHotel, setSelectedWithoutHotel] = useState(false);
+  const [selectedTicketType, setSelectedTicketType] = useState(null);
 
   const remoteTicket = ticketTypes?.find((t) => t.isRemote);
   const inPersonTicket = ticketTypes?.find((t) => !t.isRemote && !t.includesHotel);
   const inPersonWithHotelTicket = ticketTypes?.find((t) => !t.isRemote && t.includesHotel);
 
+  async function save() {
+    const data = { ticketTypeId: selectedTicketType?.id };
+    try {
+      await saveTicket(data);
+      toast('Informações salvas com sucesso!');
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } catch (err) {
+      toast('Não foi possível salvar suas informações!');
+    }
+  }
+
+  useEffect(() => {
+    if (selectedRemote) {
+      setSelectedTicketType(remoteTicket);
+      setSelectedWithoutHotel(false);
+      setSelectedWithHotel(false);
+    } else if (selectedInPerson) {
+      if (selectWithHotel) {
+        setSelectedTicketType(inPersonWithHotelTicket);
+      } else if (selectWithoutHotel) {
+        setSelectedTicketType(inPersonTicket);
+      } else {
+        setSelectedTicketType(null);
+      }
+    } else {
+      setSelectedTicketType(null);
+    }
+  }, [selectedInPerson, selectedRemote, selectWithHotel, selectWithoutHotel]);
+
   if (!ticketTypes || ticketTypes.length < 1) {
     return 'Os preços dos ingressos ainda não foram cadastrados ';
   }
-
   return (
     <>
       <>
@@ -67,11 +103,19 @@ export default function TicketSelection() {
                   setSelectedWithoutHotel(false);
                 }}
               >
-                <span className="ticket-type-name">Online</span>
+                <span className="ticket-type-name">Com hotel</span>
                 <span className="ticket-price"> {`+ R$ ${inPersonWithHotelTicket.price - inPersonTicket.price}`}</span>
               </TicketPriceContainer>
             )}
           </TicketsRow>
+        </>
+      )}
+      {selectedTicketType && (
+        <>
+          <RowTitle>{`Fechado! O total ficou em R$ ${selectedTicketType?.price} Agora é só confirmar:`}</RowTitle>
+          <Button disabled={!selectedTicketType} onClick={save}>
+            RESERVAR INGRESSO
+          </Button>
         </>
       )}
     </>
