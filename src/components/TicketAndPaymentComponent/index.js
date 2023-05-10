@@ -2,7 +2,7 @@ import useEnrollment from '../../hooks/api/useEnrollment';
 import styled from 'styled-components';
 import Typography from '@material-ui/core/Typography';
 import TicketSelection from './TicketSelection';
-import PaymentForm from './PaymentForm';
+import PaymentForm from './PaymentSection';
 import NoEnrollmentFound from './NoEnrollmentFound';
 import useTicket from '../../hooks/api/useTicket';
 
