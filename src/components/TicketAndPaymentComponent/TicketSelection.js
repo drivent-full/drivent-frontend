@@ -51,7 +51,7 @@ export default function TicketSelection() {
     }
   }, [selectedInPerson, selectedRemote, selectWithHotel, selectWithoutHotel]);
 
-  if (!ticketTypes || ticketTypes.length < 1) {
+  if (!inPersonTicket && !remoteTicket) {
     return 'Os preços dos ingressos ainda não foram cadastrados ';
   }
   return (
@@ -59,26 +59,30 @@ export default function TicketSelection() {
       <>
         <RowTitle>Primeiro, escolha sua modalidade de ingresso</RowTitle>
         <TicketsRow>
-          <TicketPriceContainer
-            selected={selectedInPerson}
-            onClick={() => {
-              setSelectedInPerson(true);
-              setSelectedRemote(false);
-            }}
-          >
-            <span className="ticket-type-name">Presencial</span>
-            <span className="ticket-price"> {`R$ ${inPersonTicket.price}`}</span>
-          </TicketPriceContainer>
-          <TicketPriceContainer
-            selected={selectedRemote}
-            onClick={() => {
-              setSelectedRemote(true);
-              setSelectedInPerson(false);
-            }}
-          >
-            <span className="ticket-type-name">Online</span>
-            <span className="ticket-price"> {`R$ ${remoteTicket.price}`}</span>
-          </TicketPriceContainer>
+          {inPersonTicket && (
+            <TicketPriceContainer
+              selected={selectedInPerson}
+              onClick={() => {
+                setSelectedInPerson(true);
+                setSelectedRemote(false);
+              }}
+            >
+              <span className="ticket-type-name">Presencial</span>
+              <span className="ticket-price"> {`R$ ${inPersonTicket.price}`}</span>
+            </TicketPriceContainer>
+          )}
+          {remoteTicket && (
+            <TicketPriceContainer
+              selected={selectedRemote}
+              onClick={() => {
+                setSelectedRemote(true);
+                setSelectedInPerson(false);
+              }}
+            >
+              <span className="ticket-type-name">Online</span>
+              <span className="ticket-price"> {`R$ ${remoteTicket.price}`}</span>
+            </TicketPriceContainer>
+          )}
         </TicketsRow>
       </>
       {selectedInPerson && (
