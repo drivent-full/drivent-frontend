@@ -112,7 +112,10 @@ export default function TicketSelection() {
       )}
       {selectedTicketType && (
         <>
-          <RowTitle>{`Fechado! O total ficou em R$ ${selectedTicketType?.price} Agora é só confirmar:`}</RowTitle>
+          <RowTitle>
+            Fechado! O total ficou em <span className="bold">{`R$ ${selectedTicketType?.price}`}</span>. Agora é só
+            confirmar:
+          </RowTitle>
           <Button disabled={!selectedTicketType} onClick={save}>
             RESERVAR INGRESSO
           </Button>
@@ -124,7 +127,9 @@ export default function TicketSelection() {
 
 const TicketPriceContainer = styled.div`
   border-radius: 20px;
-  border: 1px solid #cecece;
+  border-style: solid;
+  border-color: #cecece;
+  border-width: ${(props) => (props.selected ? 0 : '1px')};
   width: 145px;
   height: 145px;
   background-color: ${(props) => (props.selected ? '#FFEED2' : null)};
@@ -134,7 +139,7 @@ const TicketPriceContainer = styled.div`
   justify-content: center;
   font-family: 'Roboto', sans-serif;
   margin-right: 24px;
-  .ticket-type-pxname {
+  .ticket-type-name {
     font-size: 16px;
   }
   .ticket-price {
@@ -147,8 +152,13 @@ const RowTitle = styled.div`
   font-family: 'Roboto', sans-serif;
   font-size: 20px;
   color: #858585;
+  margin-bottom: 17px;
+  .bold {
+    font-weight: bold;
+  }
 `;
 
 const TicketsRow = styled.div`
   display: flex;
+  margin-bottom: 40px;
 `;
