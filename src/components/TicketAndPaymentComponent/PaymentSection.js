@@ -195,7 +195,7 @@ width: 100%;
 }
   input {
   margin-bottom: 20px;
-  width: 60%;
+  width: 70%;
   padding-left: 11px;
   height: 45px;
   border-radius: 8px;
@@ -206,10 +206,10 @@ width: 100%;
 }
 
   .expiry {
-  width: 35%;
+  width: 40%;
 }
   .cvc {
-  width: 21%;
+  width: 27%;
   margin-left: 20px;
 }
 `;
