@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import useTicketTypes from '../../hooks/api/useTicketTypes';
 import useSaveTicket from '../../hooks/api/useSaveTicket.js';
 import Button from '../Form/Button';
 
-export default function TicketSelection() {
+export default function TicketSelection({ refresh }) {
   const { ticketTypes } = useTicketTypes();
   const { saveTicket } = useSaveTicket();
 
@@ -25,9 +24,8 @@ export default function TicketSelection() {
     try {
       await saveTicket(data);
       toast('Informações salvas com sucesso!');
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
+      // force the parent component to call useTicket again and redirect to the PaymentSection
+      if (refresh) refresh();
     } catch (err) {
       toast('Não foi possível salvar suas informações!');
     }
