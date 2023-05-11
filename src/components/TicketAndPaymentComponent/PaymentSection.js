@@ -103,7 +103,7 @@ const ConfirmTicketContainer = styled.div`
   font-family: 'Roboto', sans-serif;
   margin-bottom: 24px;
   margin-right: 24px;
-  line-height: 19px;
+  line-height: 18px;
  
   p {
     margin-top: 8px;
