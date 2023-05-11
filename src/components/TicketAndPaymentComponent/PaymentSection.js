@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Typography from '@material-ui/core/Typography';
 import styled from 'styled-components';
 import 'react-credit-cards-2/dist/es/styles-compiled.css';
 import { RowTitle } from './TicketSelection';
@@ -7,6 +8,8 @@ import Cards from 'react-credit-cards-2';
 import useSavePayment from '../../hooks/api/useSavePayment.js';
 import useTicket from '../../hooks/api/useTicket';
 import Button from '../Form/Button';
+import { IconContext } from 'react-icons';
+import { IoCheckmarkCircleSharp } from 'react-icons/io5';
 
 export default function Payment() {
   const { ticket } = useTicket();
@@ -83,67 +86,95 @@ export default function Payment() {
 
   return (
     <>
-      <RowTitle>Ingresso escolhido</RowTitle>
-      {/*  {JSON.stringify(ticket)} */}
-      {ticket && (
-        <ConfirmTicketContainer>
-          {ticket.TicketType?.isRemote ? 'Online' : 'Presencial'} + {ticket.TicketType?.name}
-          <p>R$ {ticket.TicketType?.price}</p>
-        </ConfirmTicketContainer>
-      )}
-      <RowTitle>Pagamento</RowTitle>
-      <CreditCard>
-        <div>
-          <Cards
-            number={state.number}
-            expiry={state.expiry}
-            cvc={state.cvc}
-            name={state.name}
-            focused={state.focus}
-          />
-        </div>
+      <>
+        <RowTitle>Ingresso escolhido</RowTitle>
+        {ticket && (
+          <ConfirmTicketContainer>
+            {ticket.TicketType?.isRemote ? 'Online' : 'Presencial'} + {ticket.TicketType?.name}
+            <p>R$ {ticket.TicketType?.price}</p>
+          </ConfirmTicketContainer>
+        )}
+        <RowTitle>Pagamento</RowTitle>
+        {!isLoading ? (
+          !pay ? (
+            <>
+              <CreditCard>
+                <div>
+                  <Cards
+                    number={state.number}
+                    expiry={state.expiry}
+                    cvc={state.cvc}
+                    name={state.name}
+                    focused={state.focus}
+                  />
+                </div>
 
-        <PaymentForm>
-          <input
-            type="number"
-            name="number"
-            placeholder="Card Number"
-            value={state.number}
-            onChange={handleInputChange}
-            onFocus={handleInputFocus}
-          />
-          <input
-            type="text"
-            name="name"
-            placeholder="Name"
-            value={state.name}
-            onChange={handleInputChange}
-            onFocus={handleInputFocus}
-          />
-          <div>
-            <input
-              className="expiry"
-              type="text"
-              name="expiry"
-              placeholder="Valid Thru"
-              value={state.expiry}
-              onChange={handleInputChange}
-              onFocus={handleInputFocus}
-            />
-            <input
-              className="cvc"
-              type="tel"
-              name="cvc"
-              placeholder="CVC"
-              value={state.cvc}
-              onChange={handleInputChange}
-              onFocus={handleInputFocus}
-            />
-          </div>
-        </PaymentForm>
-      </CreditCard>
+                <PaymentForm>
+                  <input
+                    type="number"
+                    name="number"
+                    placeholder="Card Number"
+                    value={state.number}
+                    onChange={handleInputChange}
+                    onFocus={handleInputFocus}
+                  />
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Name"
+                    value={state.name}
+                    onChange={handleInputChange}
+                    onFocus={handleInputFocus}
+                  />
+                  <div>
+                    <input
+                      className="expiry"
+                      type="text"
+                      name="expiry"
+                      placeholder="Valid Thru"
+                      value={state.expiry}
+                      onChange={handleInputChange}
+                      onFocus={handleInputFocus}
+                    />
+                    <input
+                      className="cvc"
+                      type="tel"
+                      name="cvc"
+                      placeholder="CVC"
+                      value={state.cvc}
+                      onChange={handleInputChange}
+                      onFocus={handleInputFocus}
+                    />
+                  </div>
+                </PaymentForm>
+              </CreditCard>
 
-      <Button onClick={handleSubmit}>FINALIZAR PAGAMENTO</Button>
+              <Button onClick={handleSubmit}>FINALIZAR PAGAMENTO</Button>
+            </>
+          ) : (
+            <Paid>
+              <IconContext.Provider
+                value={{
+                  color: '#36B853',
+                  className: 'global-class-name',
+                  size: '50px',
+                }}
+              >
+                <IoCheckmarkCircleSharp className="ion-icon" />
+              </IconContext.Provider>
+
+              <div>
+                <Info variant="body1" style={{ fontWeight: 700 }}>
+                  Pagamento Confirmado!
+                </Info>
+                <Info variant="body1">Prossiga para escolha de hospedagem e atividades</Info>
+              </div>
+            </Paid>
+          )
+        ) : (
+          <></>
+        )}
+      </>
     </>
   );
 }
@@ -163,9 +194,9 @@ const ConfirmTicketContainer = styled.div`
   margin-bottom: 24px;
   margin-right: 24px;
   line-height: 18px;
- 
+
   p {
-    margin-top: 8px;
+    margin - top: 8px;
     font-size: 14px;
     color: #898989;
   }
@@ -175,41 +206,53 @@ const CreditCard = styled.div`
   display: flex;
   margin-bottom: 20px;
   @media (max-width: 600px) {
-    flex-direction: column;
+    flex - direction: column;
     width: 100px;
 
     div {
-      margin-bottom: 10px;
+      margin - bottom: 10px;
     }
   }
 `;
 
 const PaymentForm = styled.form`
-display: flex;
-flex-direction: column;
-margin-left: 20px;
-width: 100%;
-@media(max-width: 600px) {
-  width: 500px;
-  margin-left: 0px;
-}
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+  width: 100%;
+  @media(max-width: 600px) {
+    width: 500px;
+    margin-left: 0px;
+  }
+
   input {
-  margin-bottom: 20px;
-  width: 70%;
-  padding-left: 11px;
-  height: 45px;
-  border-radius: 8px;
-  border-width: 0.1px;
-  border-color: #c9c9c9;
-  font-size: 1.1rem;
-  color: #8e8e8e;
-}
+    margin - bottom: 20px;
+    width: 70%;
+    padding-left: 11px;
+    height: 45px;
+    border-radius: 8px;
+    border-width: 0.1px;
+    border-color: #c9c9c9;
+    font-size: 1.1rem;
+    color: #8e8e8e;
+  }
 
   .expiry {
-  width: 40%;
-}
+    width: 40%;
+  }
   .cvc {
-  width: 27%;
-  margin-left: 20px;
-}
+    width: 27%;
+    margin-left: 20px;
+  }
 `;
+
+const Paid = styled.div`
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  .ion-icon {
+    margin-right: 10px;
+  }
+`;
+
+const Info = styled(Typography)``;
