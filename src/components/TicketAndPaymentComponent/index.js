@@ -12,7 +12,7 @@ export default function TicketAndPaymentComponent() {
   return (
     <>
       <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
-      {ticket ? <PaymentForm ticket={ticket} /> : enrollment ? <TicketSelection /> : <NoEnrollmentFound />}
+      {ticket ? <PaymentForm /> : enrollment ? <TicketSelection /> : <NoEnrollmentFound />}
     </>
   );
 }

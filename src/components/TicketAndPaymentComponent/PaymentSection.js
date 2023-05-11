@@ -2,11 +2,19 @@ import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import 'react-credit-cards-2/dist/es/styles-compiled.css';
 import { RowTitle } from './TicketSelection';
+import { toast } from 'react-toastify';
 import Cards from 'react-credit-cards-2';
+import useSavePayment from '../../hooks/api/useSavePayment.js';
 import useTicket from '../../hooks/api/useTicket';
+import Button from '../Form/Button';
 
 export default function Payment() {
   const { ticket } = useTicket();
+  const { getTicket } = useTicket();
+  const { savePayment } = useSavePayment();
+  const [pay, setPay] = useState(false);
+  const [ticketId, setTicketId] = useState(undefined);
+  const [isLoading, setLoading] = useState(true);
   const [state, setState] = useState({
     number: '',
     expiry: '',
@@ -14,6 +22,54 @@ export default function Payment() {
     name: '',
     focus: '',
   });
+
+  // eslint-disable-next-line space-before-function-paren
+  useEffect(async () => {
+    try {
+      const ticket = await getTicket();
+      if (ticket.status === 'PAID') {
+        setPay(true);
+      }
+      setTicketId(ticket.id);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log(error);
+    }
+    setLoading(false);
+  }, []);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    const cardData = {
+      cvc: state.cvc,
+      expiry: state.expiry,
+      issuer: state.name,
+      number: state.number,
+    };
+
+    try {
+      if (state.cvc.length !== 3 || state.expiry.length < 4 || state.expiry.length > 5 || state.name.length < 6 || state.number.length !== 16) {
+        return toast('Dados do cartão incorreto!');
+      }
+      await savePayment(ticketId, cardData);
+      resetForm();
+      setPay(true);
+      toast('Pagamento feito com sucesso!');
+    } catch (err) {
+      toast('Não foi possível efetuar o pagamento!');
+    }
+  }
+
+  function resetForm() {
+    setState({
+      number: '',
+      expiry: '',
+      cvc: '',
+      name: '',
+      focus: '',
+    });
+  }
 
   const handleInputChange = (evt) => {
     const { name, value } = evt.target;
@@ -28,6 +84,7 @@ export default function Payment() {
   return (
     <>
       <RowTitle>Ingresso escolhido</RowTitle>
+      {/*  {JSON.stringify(ticket)} */}
       {ticket && (
         <ConfirmTicketContainer>
           {ticket.TicketType?.isRemote ? 'Online' : 'Presencial'} + {ticket.TicketType?.name}
@@ -85,6 +142,8 @@ export default function Payment() {
           </div>
         </PaymentForm>
       </CreditCard>
+
+      <Button onClick={handleSubmit}>FINALIZAR PAGAMENTO</Button>
     </>
   );
 }
@@ -139,9 +198,9 @@ width: 100%;
   width: 70%;
   padding-left: 11px;
   height: 45px;
-  border-radius: 5px;
-  border-width: 1px;
-  border-color: #8e8e8e;
+  border-radius: 8px;
+  border-width: 0.1px;
+  border-color: #c9c9c9;
   font-size: 1.1rem;
   color: #8e8e8e;
 }
@@ -150,7 +209,7 @@ width: 100%;
   width: 40%;
 }
   .cvc {
-  width: 26%;
+  width: 27%;
   margin-left: 20px;
 }
 `;
