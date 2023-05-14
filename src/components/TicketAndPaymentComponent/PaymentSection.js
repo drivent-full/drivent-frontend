@@ -196,7 +196,7 @@ const ConfirmTicketContainer = styled.div`
   line-height: 18px;
 
   p {
-    margin - top: 8px;
+    margin-top: 8px;
     font-size: 14px;
     color: #898989;
   }
@@ -206,11 +206,11 @@ const CreditCard = styled.div`
   display: flex;
   margin-bottom: 20px;
   @media (max-width: 600px) {
-    flex - direction: column;
+    flex-direction: column;
     width: 100px;
 
     div {
-      margin - bottom: 10px;
+      margin-bottom: 10px;
     }
   }
 `;
@@ -226,7 +226,7 @@ const PaymentForm = styled.form`
   }
 
   input {
-    margin - bottom: 20px;
+    margin-bottom: 20px;
     width: 70%;
     padding-left: 11px;
     height: 45px;
