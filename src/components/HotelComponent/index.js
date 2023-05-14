@@ -2,28 +2,59 @@ import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import useTicketTypes from '../../hooks/api/useTicketTypes';
 import useTicket from '../../hooks/api/useTicket';
+import useHotel from '../../hooks/api/useHotel';
 
 export default function HotelComponent() {
-  const { ticketTypes } = useTicketTypes();
-  const { ticket } = useTicket();
-  console.log(JSON.stringify(ticketTypes));
-  const ticketStatus = 'RESERVED';
-  const includesHotel = true;
+  // const { ticketTypes } = useTicketTypes();
+  // const { ticket } = useTicket();
+  // console.log(JSON.stringify(ticketTypes));
+  //const ticketStatus = 'RESERVED';
+  //const includesHotel = true;
   //const ticketStatus = ticket.ticketStatus;
   //const includesHotel = ticketTypes.includesHotel;
   const [nome, setNome] = useState('');
+  const { getTicket } = useTicket();
+  const { getHotel } = useHotel();
+  const [includesHotel, setIncludesHotel] = useState(undefined);
+  const [ticketStatus, setTicketStatus] = useState('');
+  const [isLoading, setLoading] = useState(true);
+
+  useEffect(async() => {
+    try {
+      const ticket = await getTicket();
+      setIncludesHotel(ticket.TicketType.includesHotel);
+      setTicketStatus(ticket.status); 
+    }
+    catch (error) {
+      // eslint-disable-next-line no-console
+      console.log(error);
+    }
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    if (includesHotel=== true) {
-      if(ticketStatus === 'PAID') {
-        
-      }else{
-        setNome('Você precisa ter confirmado pagamento antes de fazer a escolha de hospedagem');
-      }
-    }else{
+    if (ticketStatus === 'RESERVED') {
+      setNome('Você precisa ter confirmado pagamento antes de fazer a escolha de hospedagem');
+    }
+    if (ticketStatus === 'PAID' && includesHotel === false) {
       setNome('Sua modalidade de ingresso não inclui hospedagem. Prossiga para a escolha de atividades.');
     }
-  }, [ticketStatus, includesHotel]);
+    if (ticketStatus === 'PAID' && includesHotel === true) {
+      setNome('');
+    }
+  }, [includesHotel, ticketStatus]);
+
+  useEffect(async() => {
+    try {
+      const hotel = await getHotel();
+      console.log(hotel);
+    }
+    catch (error) {
+      // eslint-disable-next-line no-console
+      console.log(error);
+    }
+    setLoading(false);
+  }, []);
 
   if (includesHotel === true && ticketStatus === 'PAID') {
     return (
