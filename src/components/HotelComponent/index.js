@@ -13,8 +13,11 @@ export default function HotelComponent() {
   //const ticketStatus = ticket.ticketStatus;
   //const includesHotel = ticketTypes.includesHotel;
   const [nome, setNome] = useState('');
+  const [hotels, setHotels] = useState([]);
   const { getTicket } = useTicket();
   const { getHotel } = useHotel();
+  const hotel = getHotel;
+  console.log(hotel);
   const [includesHotel, setIncludesHotel] = useState(undefined);
   const [ticketStatus, setTicketStatus] = useState('');
   const [isLoading, setLoading] = useState(true);
@@ -23,10 +26,21 @@ export default function HotelComponent() {
     try {
       const ticket = await getTicket();
       setIncludesHotel(ticket.TicketType.includesHotel);
-      setTicketStatus(ticket.status); 
+      setTicketStatus(ticket.status);
     }
     catch (error) {
       // eslint-disable-next-line no-console
+      console.log(error);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(async() => {
+    try {
+      const hotels = await getHotel();
+      setHotels(hotels); // Define o array de hotéis no estado local
+    }
+    catch (error) {
       console.log(error);
     }
     setLoading(false);
@@ -60,14 +74,20 @@ export default function HotelComponent() {
     return (
       <Container>
         <Titulo>
-          Escolha de hotel e quarto
+          <h1>Escolha de hotel e quarto</h1>
+          <h2>Primeiro, escolha seu hotel</h2>
         </Titulo>
-        <Subtitulo>
-          Opções de Hotel
-        </Subtitulo>
+        <ListaHoteis>
+          {hotels.map((hotel) => (
+            <ComponentMap key={hotel.id}>
+              <img src={hotel.image} alt={hotel.name} />
+              <h3>{hotel.name}</h3>
+            </ComponentMap>
+          ))}
+        </ListaHoteis>
       </Container>
     );
-  }else{
+  } else {
     return (
       <Container>
         <Titulo>
@@ -81,6 +101,23 @@ export default function HotelComponent() {
   }
 }
 
+const ComponentMap = styled.div`
+width: 196px;
+height: 264px;
+background: #EBEBEB;
+border-radius: 10px;
+margin:9.5px;
+img{
+  width: 168px;
+  height: 109px;
+  border-radius: 5px;
+  margin:16px 14px 0px 14px;
+}
+h3{
+  margin:10px 15px 0px 15px;
+}
+`;
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -88,16 +125,32 @@ const Container = styled.div`
 `;
 
 const Titulo = styled.div`
-  font-family: 'Roboto';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 34px;
-  line-height: 40px;
-  color: #000000;
+  h1{
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 34px;
+    line-height: 40px;
+    color: #000000;
+    margin:0px 0px 0px 15px;
+  }
+  h2{
+    font-family: 'Roboto';
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 23px;
+    color: #8E8E8E;
+    margin:26px 15px 10px 15px;
+  }
+`;
+
+const ListaHoteis = styled.div`
+display: flex;
+
 `;
 
 const Subtitulo = styled.div`
-  font-family: 'Roboto';
+font-family: 'Roboto';
   font-style: normal;
   font-weight: 400;
   font-size: 20px;
