@@ -1,23 +1,13 @@
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
-import useTicketTypes from '../../hooks/api/useTicketTypes';
 import useTicket from '../../hooks/api/useTicket';
 import useHotel from '../../hooks/api/useHotel';
 
 export default function HotelComponent() {
-  // const { ticketTypes } = useTicketTypes();
-  // const { ticket } = useTicket();
-  // console.log(JSON.stringify(ticketTypes));
-  //const ticketStatus = 'RESERVED';
-  //const includesHotel = true;
-  //const ticketStatus = ticket.ticketStatus;
-  //const includesHotel = ticketTypes.includesHotel;
   const [nome, setNome] = useState('');
   const [hotels, setHotels] = useState([]);
   const { getTicket } = useTicket();
   const { getHotel } = useHotel();
-  const hotel = getHotel;
-  console.log(hotel);
   const [includesHotel, setIncludesHotel] = useState(undefined);
   const [ticketStatus, setTicketStatus] = useState('');
   const [isLoading, setLoading] = useState(true);
@@ -57,18 +47,6 @@ export default function HotelComponent() {
       setNome('');
     }
   }, [includesHotel, ticketStatus]);
-
-  useEffect(async() => {
-    try {
-      const hotel = await getHotel();
-      console.log(hotel);
-    }
-    catch (error) {
-      // eslint-disable-next-line no-console
-      console.log(error);
-    }
-    setLoading(false);
-  }, []);
 
   if (includesHotel === true && ticketStatus === 'PAID') {
     return (
