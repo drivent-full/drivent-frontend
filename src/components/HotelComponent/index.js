@@ -2,6 +2,8 @@ import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import useTicket from '../../hooks/api/useTicket';
 import useHotel from '../../hooks/api/useHotel';
+import RoomSummary from './RoomSummary';
+import useBooking from '../../hooks/api/useBooking';
 
 export default function HotelComponent() {
   const [nome, setNome] = useState('');
@@ -11,6 +13,7 @@ export default function HotelComponent() {
   const [includesHotel, setIncludesHotel] = useState(undefined);
   const [ticketStatus, setTicketStatus] = useState('');
   const [isLoading, setLoading] = useState(true);
+  const { booking } = useBooking();
 
   useEffect(async() => {
     try {
@@ -47,6 +50,10 @@ export default function HotelComponent() {
       setNome('');
     }
   }, [includesHotel, ticketStatus]);
+
+  if (booking) {
+    return <RoomSummary booking={booking}/>;
+  }
 
   if (includesHotel === true && ticketStatus === 'PAID') {
     return (
