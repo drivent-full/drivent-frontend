@@ -28,7 +28,6 @@ export default function RoomSummary({ booking }) {
 const ComponentMap = styled.div`
   width: 196px;
   height: 264px;
-  background: #ebebeb;
   border-radius: 10px;
   margin: 9.5px;
   img {
@@ -49,10 +48,12 @@ const SelectedHotelComponent = styled(ComponentMap)`
     height: 140px;
     color: 3c3c3c;
     padding-left: 10px;
+    margin-top: 10px;
     .hotel-name {
       font-size: 20px;
     }
     .title {
+      margin-top: 14px;
       font-size: 12px;
       font-weight: bold;
     }
