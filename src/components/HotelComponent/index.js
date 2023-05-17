@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import useTicket from '../../hooks/api/useTicket';
 import useHotel from '../../hooks/api/useHotel';
+import useHotelWithRooms from '../../hooks/api/useHotelWithRooms';
 
 export default function HotelComponent() {
   const [nome, setNome] = useState('');
@@ -11,6 +12,8 @@ export default function HotelComponent() {
   const [includesHotel, setIncludesHotel] = useState(undefined);
   const [ticketStatus, setTicketStatus] = useState('');
   const [isLoading, setLoading] = useState(true);
+  const { getHotelWithRooms } = useHotelWithRooms();
+  const [hotelsWithRooms, setHotelsWithRooms] = useState([]);
 
   useEffect(async() => {
     try {
@@ -29,6 +32,19 @@ export default function HotelComponent() {
     try {
       const hotels = await getHotel();
       setHotels(hotels); // Define o array de hotéis no estado local
+      console.log(hotels);
+    }
+    catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(async() => {
+    try {
+      const hotelsWithRooms = await getHotelWithRooms(2); // Faz o get do hotel escolhido com os quartos, bastando passar o hotelId como parâmetro
+      setHotelsWithRooms(hotelsWithRooms);
+      console.log(hotelsWithRooms);
     }
     catch (error) {
       console.log(error);
