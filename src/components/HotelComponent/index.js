@@ -19,6 +19,7 @@ export default function HotelComponent() {
   const [hotelsWithRooms, setHotelsWithRooms] = useState([]);
   const [quantities, setQuantities] = useState([]);
   const [id, setId] = useState(0);
+  const [selectedHotelRooms, setSelectedHotelRooms] = useState();
 
   useEffect(async() => {
     try {
@@ -128,6 +129,14 @@ export default function HotelComponent() {
     }
   };
 
+  const handleHotelClick = (hotelId) => {
+    const selectedHotel = hotelsWithRooms.find((hotel) => hotel.id === hotelId);
+    console.log(selectedHotel);
+    if (selectedHotel) {
+      setSelectedHotelRooms(selectedHotel.Rooms);
+    }
+  };
+  
   if (includesHotel === true && ticketStatus === 'PAID') {
     return (
       <Container>
@@ -137,7 +146,7 @@ export default function HotelComponent() {
         </Titulo>
         <ListaHoteis>
           {hotels.map((hotel, index) => (
-            <ComponentMap key={hotel.id}>
+            <ComponentMap key={hotel.id} onClick={() => handleHotelClick(hotel.id)}>
               <img src={hotel.image} alt={hotel.name} />
               <h3>{hotel.name}</h3>
               <h4>Tipos de acomodação:</h4>
@@ -156,6 +165,19 @@ export default function HotelComponent() {
             </ComponentMap>
           ))}
         </ListaHoteis>
+        {selectedHotelRooms != undefined && (
+          <div>
+            <h2>Quartos selecionados:</h2>
+            <Rooms>
+              {selectedHotelRooms.map((room) => (
+                <Room key={room.id}>
+                  <h1>{room.name}</h1>
+                  <Icons></Icons>
+                </Room>
+              ))}
+            </Rooms>
+          </div>
+        )}
       </Container>
     );
   } else {
@@ -167,6 +189,32 @@ export default function HotelComponent() {
     );
   }
 }
+
+const Icons = styled.div`
+
+`;
+
+const Rooms = styled.div`
+display: flex;
+flex-wrap: wrap;
+`;
+
+const Room = styled.div`
+border: 1px solid #CECECE;
+border-radius: 10px;
+width: 190px;
+height: 45px;
+margin: 4px 9px 0px 14px;
+h1{
+  margin: 11px 130px 0px 0px;
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 23px;
+  text-align: center;
+}
+`;
 
 const ComponentMap = styled.div`
   width: 196px;
