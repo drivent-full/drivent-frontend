@@ -1,7 +1,7 @@
 import api from './api';
 
 export async function getBooking(token) {
-  const response = await api.get('/booking', {
+  const response = await api.get('/booking/all', {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -11,11 +11,11 @@ export async function getBooking(token) {
 }
 
 export async function save(body, token) {
-    const response = await api.post('/booking', body, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  const response = await api.post('/booking', body, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   
-    return response.data;
-  }
+  return response.data;
+}

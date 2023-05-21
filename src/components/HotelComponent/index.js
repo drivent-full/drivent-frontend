@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import useTicket from '../../hooks/api/useTicket';
 import useHotel from '../../hooks/api/useHotel';
 import useHotelWithRooms from '../../hooks/api/useHotelWithRooms';
+import useBooking from '../../hooks/api/useBooking';
 
 export default function HotelComponent() {
   const [nome, setNome] = useState('');
@@ -13,6 +14,8 @@ export default function HotelComponent() {
   const [ticketStatus, setTicketStatus] = useState('');
   const [isLoading, setLoading] = useState(true);
   const { getHotelWithRooms } = useHotelWithRooms();
+  const { getBooking } = useBooking();
+  const [booking, setBooking] = useState([]);
   const [hotelsWithRooms, setHotelsWithRooms] = useState([]);
   const [quantities, setQuantities] = useState([]);
   const [id, setId] = useState(0);
@@ -30,6 +33,17 @@ export default function HotelComponent() {
 
   useEffect(async() => {
     try {
+      const ticket = await getTicket();
+      setIncludesHotel(ticket.TicketType.includesHotel);
+      setTicketStatus(ticket.status);
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  }, []);
+  
+  useEffect(async() => {
+    try {
       const hotels = await getHotel();
       setHotels(hotels);
       console.log(hotels);
@@ -41,11 +55,32 @@ export default function HotelComponent() {
         const hotelId = hotels[i].id;
         const hotelWithRooms = await getHotelWithRooms(hotelId);
         console.log(hotelWithRooms.Rooms);
+  
+        // Obter a quantidade de quartos reservados para o hotel
+        const bookingData = await getBooking();
+        console.log(bookingData);
+  
+        let reservedRoomsCount = 0;
+  
+        for (let j = 0; j < bookingData.length; j++) {
+          const roomId = bookingData[j].roomId;
+  
+          for (let k = 0; k < hotelWithRooms.Rooms.length; k++) {
+            if (hotelWithRooms.Rooms[k].id === roomId) {
+              reservedRoomsCount++;
+            }
+          }
+        }
+  
         let soma = 0;
         for (let j = 0; j < hotelWithRooms.Rooms.length; j++) {
           soma = soma + parseInt(hotelWithRooms.Rooms[j].capacity);
         }
-        newQuantities[i] = soma;
+  
+        // Subtrair a quantidade de quartos reservados da quantidade total de quartos
+        const availableRoomsCount = soma - reservedRoomsCount;
+  
+        newQuantities[i] = availableRoomsCount;
         newHotelsWithRooms.push(hotelWithRooms);
       }
   
