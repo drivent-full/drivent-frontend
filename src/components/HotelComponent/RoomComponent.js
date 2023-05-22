@@ -17,7 +17,8 @@ border-radius: 10px;
 width: 190px;
 height: 45px;
 margin: 4px 9px 0px 14px;
-background-color: ${(props) => (props.isSelected ? '#FFEED2' : 'transparent')};
+color: ${(props) => (props.disabled? '#9D9D9D': '')};
+background-color: ${(props) => (props.isSelected ? '#FFEED2' : props.disabled? '#E9E9E9': 'transparent')};
 pointer-events: ${(props) => (props.disabled ? 'none': 'initial')};
 h1{
   margin: 11px 130px 0px 0px;
