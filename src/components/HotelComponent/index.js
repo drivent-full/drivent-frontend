@@ -4,10 +4,13 @@ import useTicket from '../../hooks/api/useTicket';
 import useHotel from '../../hooks/api/useHotel';
 import useHotelWithRooms from '../../hooks/api/useHotelWithRooms';
 import useBooking from '../../hooks/api/useBooking';
+import RoomComponent from './RoomComponent';
+import useSaveBooking from '../../hooks/api/useSaveBooking';
 
 export default function HotelComponent() {
   const [nome, setNome] = useState('');
   const [hotels, setHotels] = useState([]);
+  const { saveBooking, saveBookingLoading, saveBookingError } = useSaveBooking();
   const { getTicket } = useTicket();
   const { getHotel } = useHotel();
   const [includesHotel, setIncludesHotel] = useState(undefined);
@@ -20,6 +23,7 @@ export default function HotelComponent() {
   const [quantities, setQuantities] = useState([]);
   const [id, setId] = useState(0);
   const [selectedHotelRooms, setSelectedHotelRooms] = useState();
+  const [selectedRoom, setSelectedRoom] = useState(null);
 
   useEffect(async() => {
     try {
@@ -129,12 +133,45 @@ export default function HotelComponent() {
     }
   };
 
+  useEffect(async() => {
+    try {
+      const bookingData = await getBooking();
+      setBooking(bookingData);
+      console.log(bookingData);
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+  
   const handleHotelClick = (hotelId) => {
     const selectedHotel = hotelsWithRooms.find((hotel) => hotel.id === hotelId);
     console.log(selectedHotel);
     if (selectedHotel) {
       setSelectedHotelRooms(selectedHotel.Rooms);
     }
+  };
+
+  const handleRoomClick = (room) => {
+    setSelectedRoom(room === selectedRoom ? null : room);
+  };
+
+  const handleBookingRoom = async() => {
+    if (selectedRoom) {
+      try {
+        const bookingData = {
+          roomId: selectedRoom.id,
+        };
+        await saveBooking(bookingData);
+        console.log('Reserva feita com sucesso!');
+      } catch (error) {
+        console.log('Erro ao fazer a reserva:', error);
+      }
+    }
+  };
+  const isRoomDisabled = (room) => {
+    const capacity = parseInt(room.capacity);
+    const bookingCount = booking.filter((booking) => booking.roomId === room.id).length;
+    return capacity === bookingCount;
   };
   
   if (includesHotel === true && ticketStatus === 'PAID') {
@@ -167,15 +204,19 @@ export default function HotelComponent() {
         </ListaHoteis>
         {selectedHotelRooms != undefined && (
           <div>
-            <h2>Quartos selecionados:</h2>
+            <h2>Ótima pedida! Agora escolha seu quarto</h2>
             <Rooms>
               {selectedHotelRooms.map((room) => (
-                <Room key={room.id}>
-                  <h1>{room.name}</h1>
-                  <Icons></Icons>
-                </Room>
+                <RoomComponent
+                  key={room.id}
+                  room={room}
+                  isSelected={room === selectedRoom}
+                  onClick={() => handleRoomClick(room)}
+                  disabled = {isRoomDisabled(room)}
+                />
               ))}
             </Rooms>
+            {selectedRoom && <BookingButton onClick={handleBookingRoom}>RESERVAR QUARTO</BookingButton>}
           </div>
         )}
       </Container>
@@ -190,8 +231,21 @@ export default function HotelComponent() {
   }
 }
 
-const Icons = styled.div`
-
+const BookingButton = styled.div`
+display: flex;
+align-items: center;
+justify-content: center;
+width: 182px;
+height: 37px;
+font-weight: 400;
+font-size: 14px;
+line-height: 16px;
+text-align: center;
+background: #E0E0E0;
+box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
+border-radius: 4px;
+margin: 30px 15px 10px 15px;
+cursor: default;
 `;
 
 const Rooms = styled.div`
@@ -199,27 +253,10 @@ display: flex;
 flex-wrap: wrap;
 `;
 
-const Room = styled.div`
-border: 1px solid #CECECE;
-border-radius: 10px;
-width: 190px;
-height: 45px;
-margin: 4px 9px 0px 14px;
-h1{
-  margin: 11px 130px 0px 0px;
-  font-family: 'Roboto';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 23px;
-  text-align: center;
-}
-`;
-
 const ComponentMap = styled.div`
   width: 196px;
   height: 264px;
-  background: #EBEBEB;
+  background-color: ${props => (props.isSelected ? '#FFEED2' : '#EBEBEB')};
   border-radius: 10px;
   margin: 9.5px;
   img {
@@ -253,6 +290,9 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
+  h2 {
+    margin: 10px 15px 10px 15px;
+  }
 `;
 
 const Titulo = styled.div`

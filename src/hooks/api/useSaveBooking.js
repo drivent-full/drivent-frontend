@@ -2,8 +2,7 @@ import * as bookingApi from '../../services/bookingApi';
 import useAsync from '../useAsync';
 import useToken from '../useToken';
 
-
-export default function useSaveTicket() {
+export default function useSaveBooking() {
   const token = useToken();
 
   const {
