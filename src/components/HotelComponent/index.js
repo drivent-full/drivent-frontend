@@ -143,6 +143,7 @@ export default function HotelComponent() {
 
   const handleHotelClick = (hotelId) => {
     const selectedHotel = hotelsWithRooms.find((hotel) => hotel.id === hotelId);
+    setId(hotelId);
     if (selectedHotel) {
       setSelectedHotelRooms(selectedHotel.Rooms);
     }
@@ -202,7 +203,7 @@ export default function HotelComponent() {
             <h2>Você já escolheu seu quarto:</h2>
           </Titulo>
           <ListaHoteis>
-            <ComponentMap>
+            <ComponentMap isSelected={true}>
               <img src={bookingByUserId.Room.Hotel.image} alt={bookingByUserId.Room.Hotel.image} />
               <h3>{bookingByUserId.Room.Hotel.name}</h3>
               <h4>Quarto reservado:</h4>
@@ -224,7 +225,7 @@ export default function HotelComponent() {
           </Titulo>
           <ListaHoteis>
             {hotels.map((hotel, index) => (
-              <ComponentMap key={hotel.id} onClick={() => handleHotelClick(hotel.id)}>
+              <ComponentMap key={hotel.id} onClick={() => handleHotelClick(hotel.id)} isSelected={hotel.id === id}>
                 <img src={hotel.image} alt={hotel.name} />
                 <h3>{hotel.name}</h3>
                 <h4>Tipos de acomodação:</h4>
