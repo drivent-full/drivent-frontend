@@ -143,6 +143,7 @@ export default function HotelComponent() {
 
   const handleHotelClick = (hotelId) => {
     const selectedHotel = hotelsWithRooms.find((hotel) => hotel.id === hotelId);
+    setId(hotelId);
     if (selectedHotel) {
       setSelectedHotelRooms(selectedHotel.Rooms);
     }
@@ -193,6 +194,11 @@ export default function HotelComponent() {
     return capacity === bookingCount;
   };
 
+  function roomOccupancyString(occupants) {
+    if (occupants < 2) return 'Você';
+    else return `Você e mais ${occupants - 1} pessoa${occupants > 2 ? 's' : ''}`;
+  }  
+
   if (includesHotel === true && ticketStatus === 'PAID') {
     if (bookingByUserId.id && toggleChange === false) {
       return (
@@ -202,13 +208,13 @@ export default function HotelComponent() {
             <h2>Você já escolheu seu quarto:</h2>
           </Titulo>
           <ListaHoteis>
-            <ComponentMap>
+            <ComponentMap isSelected={true}>
               <img src={bookingByUserId.Room.Hotel.image} alt={bookingByUserId.Room.Hotel.image} />
               <h3>{bookingByUserId.Room.Hotel.name}</h3>
               <h4>Quarto reservado:</h4>
               <h5>{bookingByUserId.Room.name}, {mapCapacityToAccommodationType(bookingByUserId.Room.capacity)}</h5>
               <h4>Pessoas no seu quarto:</h4>
-              <h5>Você</h5>
+              <h5>{roomOccupancyString(bookingByUserId.Room.occupants)}</h5>
             </ComponentMap>
           </ListaHoteis>
           <BookingButton onClick={handleChangeBooking}>TROCAR DE QUARTO</BookingButton>
@@ -224,7 +230,7 @@ export default function HotelComponent() {
           </Titulo>
           <ListaHoteis>
             {hotels.map((hotel, index) => (
-              <ComponentMap key={hotel.id} onClick={() => handleHotelClick(hotel.id)}>
+              <ComponentMap key={hotel.id} onClick={() => handleHotelClick(hotel.id)} isSelected={hotel.id === id}>
                 <img src={hotel.image} alt={hotel.name} />
                 <h3>{hotel.name}</h3>
                 <h4>Tipos de acomodação:</h4>
