@@ -195,7 +195,7 @@ export default function HotelComponent() {
   };
 
   function roomOccupancyString(occupants) {
-    if (occupants < 2) return 'Você';
+    if (occupants < 2) return 'Somente você';
     else return `Você e mais ${occupants - 1} pessoa${occupants > 2 ? 's' : ''}`;
   }  
 
