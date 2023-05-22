@@ -194,6 +194,11 @@ export default function HotelComponent() {
     return capacity === bookingCount;
   };
 
+  function roomOccupancyString(occupants) {
+    if (occupants < 2) return 'Você';
+    else return `Você e mais ${occupants - 1} pessoa${occupants > 2 ? 's' : ''}`;
+  }  
+
   if (includesHotel === true && ticketStatus === 'PAID') {
     if (bookingByUserId.id && toggleChange === false) {
       return (
@@ -209,7 +214,7 @@ export default function HotelComponent() {
               <h4>Quarto reservado:</h4>
               <h5>{bookingByUserId.Room.name}, {mapCapacityToAccommodationType(bookingByUserId.Room.capacity)}</h5>
               <h4>Pessoas no seu quarto:</h4>
-              <h5>Você</h5>
+              <h5>{roomOccupancyString(bookingByUserId.Room.occupants)}</h5>
             </ComponentMap>
           </ListaHoteis>
           <BookingButton onClick={handleChangeBooking}>TROCAR DE QUARTO</BookingButton>
