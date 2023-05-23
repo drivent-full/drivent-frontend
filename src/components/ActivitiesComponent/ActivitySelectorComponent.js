@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import { durationInHors } from './util';
 
 export default function ActivitySelectorComponent({ date }) {
+  const startTime = dayjs(date).set('hours', 9);
   const { activities } = useActivitiesByDate(date);
   const { auditoriums } = useAuditorium();
 
@@ -26,7 +27,7 @@ export default function ActivitySelectorComponent({ date }) {
             {activities
               ?.filter((a) => a.auditoriumId === auditorium.id)
               .map((act) => (
-                <ActivityWrapper key={act.id} duration={act.diff}>
+                <ActivityWrapper key={act.id} duration={act.diff} offset={durationInHors(startTime, act.startsAt)}>
                   <ActivityLeft>
                     {<div className="title">{act.title}</div>}
                     {
@@ -48,7 +49,6 @@ export default function ActivitySelectorComponent({ date }) {
 }
 
 const ActivityWrapper = styled.div`
-  border: 5px solid white;
   font-size: 12px;
   display: flex;
   background-color: #f1f1f1;
@@ -58,6 +58,9 @@ const ActivityWrapper = styled.div`
     color: #343434;
   }
   height: ${(props) => `${props.duration * 80}px`};
+  width: 100%;
+  top: ${(props) => `${props.offset * 80}px`};
+  position: absolute;
 `;
 
 const ActivityLeft = styled.div`
@@ -88,6 +91,7 @@ const AuditoriumBox = styled.div`
   min-height: 392px;
   width: 288px;
   border: 1px solid #d7d7d7;
+  position: relative;
   border-left: none;
 `;
 const AuditoriumsContainer = styled.div`
