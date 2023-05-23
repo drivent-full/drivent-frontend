@@ -7,44 +7,52 @@ import { durationInHors } from './util';
 
 export default function ActivitySelectorComponent({ date }) {
   const startTime = dayjs(date).set('hours', 9);
+  let maxEndTime = dayjs(startTime);
   const { activities } = useActivitiesByDate(date);
   const { auditoriums } = useAuditorium();
 
   if (!auditoriums) return <>Carregando...</>;
   if (!auditoriums.length) return <>Parece que não tem nenhum auditório cadastrado ainda</>;
 
-  if (activities)
+  if (activities) {
     for (const act of activities) {
       const diff = durationInHors(act.startsAt, act.endsAt);
       act.diff = diff;
+
+      let endsJs = dayjs(act.endsAt);
+      if (endsJs.isAfter(maxEndTime)) maxEndTime = endsJs;
     }
+  }
+
   return (
-    <AuditoriumsContainer>
-      {auditoriums.map((auditorium) => (
-        <AuditoriumContainer key={auditorium.id}>
-          {auditorium.name}
-          <AuditoriumBox>
-            {activities
-              ?.filter((a) => a.auditoriumId === auditorium.id)
-              .map((act) => (
-                <ActivityWrapper key={act.id} duration={act.diff} offset={durationInHors(startTime, act.startsAt)}>
-                  <ActivityLeft>
-                    {<div className="title">{act.title}</div>}
-                    {
-                      <div>
-                        {dayjs(act.startsAt).format('HH:mm')} - {dayjs(act.endsAt).format('HH:mm')}{' '}
-                      </div>
-                    }
-                  </ActivityLeft>
-                  <ActivityRight>
-                    <IoLogInOutline />
-                  </ActivityRight>
-                </ActivityWrapper>
-              ))}
-          </AuditoriumBox>
-        </AuditoriumContainer>
-      ))}
-    </AuditoriumsContainer>
+    <ScrollableElement>
+      <AuditoriumsContainer slot={Math.max(durationInHors(startTime, maxEndTime), 5)}>
+        {auditoriums.map((auditorium) => (
+          <AuditoriumContainer key={auditorium.id}>
+            {auditorium.name}
+            <AuditoriumBox>
+              {activities
+                ?.filter((a) => a.auditoriumId === auditorium.id)
+                .map((act) => (
+                  <ActivityWrapper key={act.id} duration={act.diff} offset={durationInHors(startTime, act.startsAt)}>
+                    <ActivityLeft>
+                      {<div className="title">{act.title}</div>}
+                      {
+                        <div>
+                          {dayjs(act.startsAt).format('HH:mm')} - {dayjs(act.endsAt).format('HH:mm')}{' '}
+                        </div>
+                      }
+                    </ActivityLeft>
+                    <ActivityRight>
+                      <IoLogInOutline />
+                    </ActivityRight>
+                  </ActivityWrapper>
+                ))}
+            </AuditoriumBox>
+          </AuditoriumContainer>
+        ))}
+      </AuditoriumsContainer>
+    </ScrollableElement>
   );
 }
 
@@ -88,14 +96,16 @@ const AuditoriumContainer = styled.div`
 
 const AuditoriumBox = styled.div`
   margin-top: 10px;
-  min-height: 392px;
   width: 288px;
-  border: 1px solid #d7d7d7;
+  height: 100%;
+  border-right: 1px solid #d7d7d7;
   position: relative;
+  border-top: 1px solid #d7d7d7;
   border-left: none;
 `;
 const AuditoriumsContainer = styled.div`
   margin-top: 25px;
+  min-height: ${(props) => `${props.slot * 80 + 30}px`};
   font-family: 'Roboto', sans-serif;
   font-size: 17px;
   color: #7b7b7b;
@@ -103,4 +113,10 @@ const AuditoriumsContainer = styled.div`
   & ${AuditoriumContainer}:nth-child(1) ${AuditoriumBox} {
     border-left: 1px solid #d7d7d7;
   }
+  border-bottom: 1px solid #d7d7d7;
+`;
+
+const ScrollableElement = styled.div`
+  height: 500px;
+  overflow-y: auto;
 `;
