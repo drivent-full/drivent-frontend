@@ -25,7 +25,8 @@ export default function ActivitiesComponent() {
       await subscribe(activity.id);
       toast('Inscrição realizada com sucesso');
     } catch (error) {
-      toast('Problema ao realizar a inscrição');
+      const msg = error?.response?.data.message;
+      toast('Problema ao realizar a inscrição:' + msg);
     }
   }
 
