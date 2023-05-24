@@ -1,5 +1,6 @@
 import styled from 'styled-components';
-import { IoLogInOutline } from 'react-icons/io5';
+import { BiLogIn } from 'react-icons/bi';
+import { ImCancelCircle } from 'react-icons/im';
 import { useActivitiesByDate } from '../../hooks/api/useActivity';
 import useAuditorium from '../../hooks/api/useAuditorium';
 import dayjs from 'dayjs';
@@ -43,9 +44,18 @@ export default function ActivitySelectorComponent({ date }) {
                         </div>
                       }
                     </ActivityLeft>
-                    <ActivityRight>
-                      <IoLogInOutline />
-                    </ActivityRight>
+                    {act.vacancies > 0 && (
+                      <ActivityRight>
+                        <BiLogIn />
+                        <div className="vacancies-text">{act.vacancies} vagas</div>
+                      </ActivityRight>
+                    )}
+                    {act.vacancies <= 0 && (
+                      <ActivityRight full={true}>
+                        <ImCancelCircle />
+                        <div className="vacancies-text">Esgotado</div>
+                      </ActivityRight>
+                    )}
                   </ActivityWrapper>
                 ))}
             </AuditoriumBox>
@@ -82,10 +92,15 @@ const ActivityRight = styled.div`
   height: 100%;
   width: 25%;
   font-size: 25px;
-  color: #078632;
+  color: ${(props) => (props.full ? '#CC6666' : '#078632')};
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  .vacancies-text {
+    margin-top: 5px;
+    font-size: 9px;
+  }
 `;
 
 const AuditoriumContainer = styled.div`
