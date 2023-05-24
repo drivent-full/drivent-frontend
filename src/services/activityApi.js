@@ -31,3 +31,20 @@ export async function getActivitiesByDate(token, date) {
 
   return response.data;
 }
+
+export async function subscribeToActivity(token, activityId) {
+  console.log(activityId);
+  const response = await api.post(
+    '/activities',
+    {
+      activityId,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+}

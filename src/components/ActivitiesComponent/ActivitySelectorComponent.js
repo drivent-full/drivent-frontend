@@ -1,29 +1,35 @@
 import styled from 'styled-components';
-import { BiLogIn } from 'react-icons/bi';
+import { BiLogIn, BiCheckCircle } from 'react-icons/bi';
 import { ImCancelCircle } from 'react-icons/im';
 import { useActivitiesByDate } from '../../hooks/api/useActivity';
 import useAuditorium from '../../hooks/api/useAuditorium';
 import dayjs from 'dayjs';
 import { durationInHors } from './util';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
-export default function ActivitySelectorComponent({ date }) {
+export default function ActivitySelectorComponent({ date, onClickActivity }) {
   const startTime = dayjs(date).set('hours', 9);
   let maxEndTime = dayjs(startTime);
-  const { activities } = useActivitiesByDate(date);
+  const { activities: _activities, getActivities } = useActivitiesByDate(date);
   const { auditoriums } = useAuditorium();
+  const [activities, setActivities] = useState([]);
 
-  if (!auditoriums) return <>Carregando...</>;
-  if (!auditoriums.length) return <>Parece que não tem nenhum auditório cadastrado ainda</>;
-
-  if (activities) {
-    for (const act of activities) {
+  if (_activities) {
+    for (const act of _activities) {
       const diff = durationInHors(act.startsAt, act.endsAt);
       act.diff = diff;
-
       let endsJs = dayjs(act.endsAt);
       if (endsJs.isAfter(maxEndTime)) maxEndTime = endsJs;
     }
   }
+
+  useEffect(() => {
+    setActivities(_activities);
+  }, [_activities]);
+
+  if (!auditoriums) return <>Carregando...</>;
+  if (!auditoriums.length) return <>Parece que não tem nenhum auditório cadastrado ainda</>;
 
   return (
     <ScrollableElement>
@@ -35,7 +41,12 @@ export default function ActivitySelectorComponent({ date }) {
               {activities
                 ?.filter((a) => a.auditoriumId === auditorium.id)
                 .map((act) => (
-                  <ActivityWrapper key={act.id} duration={act.diff} offset={durationInHors(startTime, act.startsAt)}>
+                  <ActivityWrapper
+                    key={act.id}
+                    duration={act.diff}
+                    offset={durationInHors(startTime, act.startsAt)}
+                    subscribed={act.subscribed}
+                  >
                     <ActivityLeft>
                       {<div className="title">{act.title}</div>}
                       {
@@ -44,13 +55,30 @@ export default function ActivitySelectorComponent({ date }) {
                         </div>
                       }
                     </ActivityLeft>
-                    {act.vacancies > 0 && (
+                    {act.subscribed && (
                       <ActivityRight>
-                        <BiLogIn />
+                        <BiCheckCircle />
+                        <div className="vacancies-text">Inscrito</div>
+                      </ActivityRight>
+                    )}
+                    {!act.subscribed && act.vacancies > 0 && (
+                      <ActivityRight>
+                        <LoginIcon
+                          // eslint-disable-next-line space-before-function-paren
+                          onClick={async () => {
+                            await onClickActivity(act);
+                            try {
+                              const data = await getActivities();
+                              setActivities(data);
+                            } catch (error) {
+                              toast('Problema ao carregar a lista de atividades. Tente recarregar a página');
+                            }
+                          }}
+                        />
                         <div className="vacancies-text">{act.vacancies} vagas</div>
                       </ActivityRight>
                     )}
-                    {act.vacancies <= 0 && (
+                    {!act.subscribed && act.vacancies <= 0 && (
                       <ActivityRight full={true}>
                         <ImCancelCircle />
                         <div className="vacancies-text">Esgotado</div>
@@ -69,7 +97,9 @@ export default function ActivitySelectorComponent({ date }) {
 const ActivityWrapper = styled.div`
   font-size: 12px;
   display: flex;
-  background-color: #f1f1f1;
+  background-color: ${(props) => (props.subscribed ? '#D0FFDB' : '#f1f1f1')};
+  border: 5px solid white;
+  border-radius: 10px;
   .title {
     margin-bottom: 5px;
     font-weight: bold;
@@ -134,4 +164,8 @@ const AuditoriumsContainer = styled.div`
 const ScrollableElement = styled.div`
   height: 500px;
   overflow-y: auto;
+`;
+
+const LoginIcon = styled(BiLogIn)`
+  cursor: pointer;
 `;

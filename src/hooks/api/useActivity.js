@@ -52,3 +52,20 @@ export function useActivitiesByDate(date) {
     getActivities,
   };
 }
+
+export function useSubscribe() {
+  const token = useToken();
+  const {
+    data: response,
+    loading: subscribeLoading,
+    error: subscribeError,
+    act: subscribe,
+  } = useAsync((activityId) => activityApi.subscribeToActivity(token, activityId), false);
+
+  return {
+    response,
+    subscribeLoading,
+    subscribeError,
+    subscribe,
+  };
+}
