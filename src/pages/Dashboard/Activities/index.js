@@ -1,3 +1,5 @@
+import ActivitiesComponent from '../../../components/ActivitiesComponent';
+
 export default function Activities() {
-  return 'Atividades: Em breve!';
+  return <ActivitiesComponent />;
 }
