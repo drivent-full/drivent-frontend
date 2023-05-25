@@ -258,6 +258,7 @@ export default function HotelComponent() {
                     key={room.id}
                     room={room}
                     isSelected={room === selectedRoom}
+                    bookings = {booking}
                     onClick={() => handleRoomClick(room)}
                     disabled={isRoomDisabled(room)}
                   />

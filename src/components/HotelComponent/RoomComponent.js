@@ -1,32 +1,33 @@
 import React from 'react';
 import styled from 'styled-components';
-import { IoPerson } from 'react-icons/io5';
+import { IonIcon } from '@ionic/react';
+import { person, personOutline } from 'ionicons/icons';
 
-function RoomComponent({ room, isSelected, onClick, disabled }) {
-  console.log(room);
+function RoomComponent({ room, isSelected, onClick, disabled, bookings }) {
   const renderIcons = () => {
     const icons = [];
-
+    
+    const reservationsCount = bookings.filter(booking => booking.roomId === room.id).length;
+    
     for (let i = 0; i < room.capacity; i++) {
-      icons.push(<Icon key={i} color={'#000000'}/>);
+      if (i < reservationsCount) {
+        icons.push(<IonIcon key={i} icon={person} />);
+      } else {
+        icons.push(<IonIcon key={i} icon={personOutline} />);
+      }
     }
-    return icons;
+    return icons;  
   };
 
   return (
     <RoomWrapper isSelected={isSelected} onClick={onClick} disabled={disabled}>
       <h1>{room.name}</h1>
-      <div>{renderIcons()}</div>
+      <Icon>{renderIcons()}</Icon>
     </RoomWrapper>
   );
 };
 
 export default RoomComponent;
-
-const Icon = styled(IoPerson)`
-  color: ${(props) => props.color};
-  width: 20px;
-`;
 
 const RoomWrapper= styled.div`
 border: 1px solid #CECECE;
@@ -50,3 +51,9 @@ h1{
   text-align: center;
 }
 `;
+const Icon = styled.div`
+  ion-icon {
+    color: #000000;
+  }
+`;
+
